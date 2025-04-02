@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -18,14 +19,23 @@ func main() {
 	go func() {
 		onExit := make(chan struct{})
 		systray.Run(func() {
-			// Icon is not currently working and I honestly couldnt tell you why...
-			icon := "C:/Users/Hunter/workspace/github.com/systraySleep/assets/icon.ico"
-			iconBytes, err := os.ReadFile(icon)
+			// Get the directory of the current executable
+			execDir, err := os.Getwd()
+			if err != nil {
+				fmt.Printf("Error getting working directory: %v\n", err)
+			}
+
+			// Construct the icon path using filepath.Join
+			icon := filepath.Join(execDir, "./assets", "moon.ico")
+			fmt.Printf("Attempting to load icon from: %s\n", icon)
+
+			iconBytes, err := loadIcon(icon)
 			if err != nil {
 				fmt.Printf("Error reading icon file: %v\n", err)
 			} else {
-				// Ignore the "success" error on Windows
+				fmt.Printf("Successfully read icon file, size: %d bytes\n", len(iconBytes))
 				systray.SetIcon(iconBytes)
+				fmt.Println("Icon set successfully")
 			}
 			systray.SetTitle("systraySleep")
 			systray.SetTooltip("systraySleep")
@@ -122,6 +132,7 @@ func sleepFunc(sleepTime float64) {
 	//   - Hiberbate: If true, the system hibernates; if false, it sleeps
 	//   - ForceCritical: If true, forces the sleep/hibernate even if applications prevent it
 	//   - DisableWakeEvent: If true, wake events are disabled
+	// The computer always seems to hibernate when this is run, power button doesn't flash like it does in normal sleep, and it takes forever to boot.
 
 	ret, _, err := syscall.SyscallN(uintptr(SetSuspendStateProc), 3, 0, 1, 0)
 	if err != syscall.Errno(0) {
@@ -131,4 +142,8 @@ func sleepFunc(sleepTime float64) {
 	if ret == 0 {
 		fmt.Println("Failed to put system to sleep")
 	}
+}
+
+func loadIcon(path string) ([]byte, error) {
+	return os.ReadFile(path)
 }
