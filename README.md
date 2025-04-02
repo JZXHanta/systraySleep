@@ -17,6 +17,33 @@ A system tray application that allows you to schedule your computer to enter sle
 - Additional timer customization options
 - System tray icon status indicator
 
+## How to Run
+
+### Prerequisites
+- Go 1.16 or later
+- Windows operating system (for sleep functionality)
+
+### Building from Source
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/systraySleep.git
+   cd systraySleep
+   ```
+2. Build the application:
+   ```bash
+   go build
+   ```
+3. Run the executable:
+   ```bash
+   ./systraySleep
+   ```
+
+### Development Mode
+To run directly from source:
+```bash
+go run .
+```
+
 ## Usage
 1. Launch the application
 2. Access the system tray menu
